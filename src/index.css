@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --accent: 139 92 246; /* violet-500 */
+    --accent-hover: 124 58 237; /* violet-600 */
+  }
+  body {
+    @apply antialiased bg-[#0b1120] text-slate-200;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .input-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500;
+  }
+  .input-error {
+    @apply border-red-400 focus:ring-red-500/30 focus:border-red-500;
+  }
+}
+
+.field-visible,
+.field-hidden {
+  overflow: hidden;
+  transition:
+    max-height 0.7s ease-out,
+    opacity 0.65s ease-out,
+    visibility 0.65s;
+}
+
+.field-visible {
+  max-height: 300px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.field-hidden {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
