@@ -12,8 +12,8 @@ const ALLOWED_ORIGIN =
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-  'Access-Control-Allow-Methods': 'POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Accept, Authorization, X-Requested-With',
 }
 
 export async function OPTIONS() {
