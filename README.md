@@ -40,7 +40,63 @@ Other scripts (from `package.json`):
 | Lint   | `npm run lint`   | Run ESLint |
 | API (Next.js) | `npm run dev:api` | Next.js server for AI form generation (port 3000) |
 
-To use the **Magic Input** (AI form generation), run `npm run dev:api` and set `OPENAI_API_KEY` (e.g. in `.env.local`). The UI calls `http://localhost:3000/api/chat` by default; override with `VITE_AI_API_URL` if needed.
+To use the **Magic Input** (AI form generation), run `npm run dev:api` and set **`GROQ_API_KEY`** (e.g. in `.env.local` in the project root). The UI calls `http://localhost:3000/api/chat` by default; override with `VITE_AI_API_URL` when building the frontend if your API is elsewhere.
+
+---
+
+## The `app` and `app/api` Folder (Next.js API)
+
+The project uses **two runtimes**:
+
+| Part | Tech | Role |
+|------|------|------|
+| **Frontend** | Vite + React | Form builder UI (port 5173). Built with `npm run build` → `dist/`. |
+| **Backend** | Next.js | Serves only the **AI form-generation API** (port 3000). No React pages for the main app. |
+
+The **`app`** folder is the [Next.js App Router](https://nextjs.org/docs/app) root:
+
+- **`app/layout.tsx`** – Root HTML layout for the Next.js server (used by the API info page and any server-rendered content).
+- **`app/page.tsx`** – A simple API info page at `http://localhost:3000` when you run `npm run dev:api`. It explains how to call the API. Your real UI runs on Vite.
+- **`app/api/`** – **API routes**. Each folder under `api/` that contains a `route.ts` file becomes an HTTP endpoint.
+
+**`app/api/chat/route.ts`** is the only API route:
+
+- **POST `/api/chat`** – Accepts `{ "prompt": "your form description" }`, streams JSON form config from the Groq model (`llama-3.3-70b-versatile`), and returns a streaming response. The frontend uses this in **Magic Input** via `useAIFormGenerator` (which calls `apiUrl` → `VITE_AI_API_URL` or `http://localhost:3000/api/chat`).
+- **OPTIONS `/api/chat`** – CORS preflight; allows the frontend origin so the browser can POST from another port/domain.
+- **CORS** – Controlled by `ALLOWED_ORIGIN` or `NEXT_PUBLIC_APP_URL` (default in dev: `http://localhost:5173`). Set one of these in production to your frontend URL so the deployed UI can call the API.
+
+So: **`app`** = Next.js app root; **`app/api`** = HTTP API under that app; **`app/api/chat`** = the `/api/chat` endpoint implemented in **`route.ts`**.
+
+---
+
+## Deployment (Frontend + API)
+
+To have the **AI (Magic Input)** work in production, deploy **both** the Vite frontend and the Next.js API, and point the frontend at the API.
+
+### 1. Deploy the API (Next.js)
+
+Deploy the Next.js app (e.g. on **Vercel**):
+
+1. Import the repo; use the root. Set **Framework Preset** to **Next.js** so Vercel runs `next build` and serves the API.
+2. **Environment variables:**  
+   - **`GROQ_API_KEY`** – Your Groq API key (required).  
+   - **`ALLOWED_ORIGIN`** or **`NEXT_PUBLIC_APP_URL`** – Your frontend URL (e.g. `https://generate-dynamic-form.netlify.app`) for CORS.
+3. After deploy, note the API base URL (e.g. `https://your-project.vercel.app`). The chat endpoint is `https://your-project.vercel.app/api/chat`.
+
+### 2. Deploy the Frontend (Vite)
+
+Your frontend is already on **Netlify** (e.g. https://generate-dynamic-form.netlify.app).
+
+1. **Build:** `npm run build`; **Publish directory:** `dist`.
+2. **Environment variable:** **`VITE_AI_API_URL`** = `https://your-project.vercel.app/api/chat` (the URL from step 1).
+3. Redeploy. The Magic Input will then call your deployed API.
+
+### 3. Summary
+
+| Where | What to set |
+|-------|-------------|
+| **Vercel (API)** | `GROQ_API_KEY`; `ALLOWED_ORIGIN` or `NEXT_PUBLIC_APP_URL` = your Netlify frontend URL |
+| **Netlify (Frontend)** | `VITE_AI_API_URL` = `https://your-vercel-app.vercel.app/api/chat` |
 
 ---
 

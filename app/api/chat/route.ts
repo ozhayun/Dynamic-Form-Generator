@@ -5,9 +5,14 @@ import { FORM_GENERATOR_SYSTEM_PROMPT } from '../../../src/lib/ai/prompts/formGe
 
 export const maxDuration = 30
 
-// Allow Vite dev server (5173) to call this API.
+// CORS: allow frontend origin. In production set NEXT_PUBLIC_APP_URL (or ALLOWED_ORIGIN) to your frontend URL.
+const ALLOWED_ORIGIN =
+  process.env.ALLOWED_ORIGIN ??
+  process.env.NEXT_PUBLIC_APP_URL ??
+  'http://localhost:5173'
+
 const CORS_HEADERS: Record<string, string> = {
-  'Access-Control-Allow-Origin': 'http://localhost:5173',
+  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
   'Access-Control-Allow-Methods': 'POST,OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 }
