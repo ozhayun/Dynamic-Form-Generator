@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { SelectFieldSchema } from '../../types/schema'
 
 export interface SelectFieldProps {
@@ -8,7 +9,7 @@ export interface SelectFieldProps {
   onBlur: () => void
 }
 
-export function SelectField({ field, value, error, onChange, onBlur }: SelectFieldProps) {
+export const SelectField = memo(function SelectField({ field, value, error, onChange, onBlur }: SelectFieldProps) {
   const str = value === null || value === undefined ? '' : String(value)
   const id = `field-${field.id}`
   const hasError = Boolean(error)
@@ -48,4 +49,4 @@ export function SelectField({ field, value, error, onChange, onBlur }: SelectFie
       )}
     </div>
   )
-}
+})

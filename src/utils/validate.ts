@@ -57,9 +57,10 @@ const validationRuleHandlers: Record<keyof FieldValidation, ValidationRuleHandle
   pattern(_key, ruleValue, ctx) {
     if (typeof ruleValue !== 'string') return null
     if (!isStringFieldType(ctx.field.type)) return null
+    const trimmed = ctx.str.trim()
     try {
       const re = new RegExp(ruleValue)
-      if (!re.test(ctx.str)) return 'Invalid format'
+      if (!re.test(trimmed)) return 'Invalid format'
     } catch {
       return 'Invalid format'
     }

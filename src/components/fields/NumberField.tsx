@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { NumberFieldSchema } from '../../types/schema'
 
 export interface NumberFieldProps {
@@ -8,7 +9,7 @@ export interface NumberFieldProps {
   onBlur: () => void
 }
 
-export function NumberField({ field, value, error, onChange, onBlur }: NumberFieldProps) {
+export const NumberField = memo(function NumberField({ field, value, error, onChange, onBlur }: NumberFieldProps) {
   const raw = value === null || value === undefined ? '' : value
   const str = typeof raw === 'number' ? String(raw) : String(raw)
   const id = `field-${field.id}`
@@ -45,4 +46,4 @@ export function NumberField({ field, value, error, onChange, onBlur }: NumberFie
       )}
     </div>
   )
-}
+})

@@ -5,7 +5,11 @@ node_modules/
 dist/
 dist-ssr/
 
-# Local env
+# Next.js
+.next/
+out/
+
+# Vite
 .env
 .env.local
 .env.*.local

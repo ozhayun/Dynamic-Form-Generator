@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { PasswordFieldSchema } from '../../types/schema'
 
 export interface PasswordFieldProps {
@@ -8,7 +9,7 @@ export interface PasswordFieldProps {
   onBlur: () => void
 }
 
-export function PasswordField({ field, value, error, onChange, onBlur }: PasswordFieldProps) {
+export const PasswordField = memo(function PasswordField({ field, value, error, onChange, onBlur }: PasswordFieldProps) {
   const str = value === null || value === undefined ? '' : String(value)
   const id = `field-${field.id}`
   const hasError = Boolean(error)
@@ -44,4 +45,4 @@ export function PasswordField({ field, value, error, onChange, onBlur }: Passwor
       )}
     </div>
   )
-}
+})

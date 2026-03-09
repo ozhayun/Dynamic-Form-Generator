@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { TextFieldSchema } from '../../types/schema'
 
 export interface TextFieldProps {
@@ -8,7 +9,7 @@ export interface TextFieldProps {
   onBlur: () => void
 }
 
-export function TextField({ field, value, error, onChange, onBlur }: TextFieldProps) {
+export const TextField = memo(function TextField({ field, value, error, onChange, onBlur }: TextFieldProps) {
   const str = value === null || value === undefined ? '' : String(value)
   const id = `field-${field.id}`
   const hasError = Boolean(error)
@@ -44,4 +45,4 @@ export function TextField({ field, value, error, onChange, onBlur }: TextFieldPr
       )}
     </div>
   )
-}
+})
