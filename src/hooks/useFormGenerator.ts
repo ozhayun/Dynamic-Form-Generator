@@ -16,7 +16,15 @@ export function useFormGenerator(schema: FormSchema) {
     getInitialValues(schema)
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
+  /** Tracks which fields have been blurred; avoids showing errors while the user is still typing. */
   const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+  /** Reset form state when schema changes so new schema gets fresh values/errors/touched (e.g. template button or AI apply). */
+  useEffect(() => {
+    setValues(getInitialValues(schema))
+    setErrors({})
+    setTouched({})
+  }, [schema])
 
   const visibleFields = useMemo((): FormSchema => {
     return schema.filter((field) =>

@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { EmailFieldSchema } from '../../types/schema'
 
 export interface EmailFieldProps {
@@ -8,7 +9,7 @@ export interface EmailFieldProps {
   onBlur: () => void
 }
 
-export function EmailField({ field, value, error, onChange, onBlur }: EmailFieldProps) {
+export const EmailField = memo(function EmailField({ field, value, error, onChange, onBlur }: EmailFieldProps) {
   const str = value === null || value === undefined ? '' : String(value)
   const id = `field-${field.id}`
   const hasError = Boolean(error)
@@ -43,4 +44,4 @@ export function EmailField({ field, value, error, onChange, onBlur }: EmailField
       )}
     </div>
   )
-}
+})

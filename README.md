@@ -38,6 +38,9 @@ Other scripts (from `package.json`):
 | Build  | `npm run build`  | `tsc -b` then `vite build` |
 | Preview| `npm run preview`| Serve production build locally |
 | Lint   | `npm run lint`   | Run ESLint |
+| API (Next.js) | `npm run dev:api` | Next.js server for AI form generation (port 3000) |
+
+To use the **Magic Input** (AI form generation), run `npm run dev:api` and set `OPENAI_API_KEY` (e.g. in `.env.local`). The UI calls `http://localhost:3000/api/chat` by default; override with `VITE_AI_API_URL` if needed.
 
 ---
 

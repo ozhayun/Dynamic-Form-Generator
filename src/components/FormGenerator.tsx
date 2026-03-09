@@ -1,4 +1,5 @@
-import type { FormSchema } from '../types/schema'
+import { memo } from 'react'
+import type { FormSchema, FieldSchema } from '../types/schema'
 import { useFormGenerator } from '../hooks/useFormGenerator'
 import { getFieldComponent } from './fields'
 
@@ -7,6 +8,41 @@ export interface FormGeneratorProps {
   onSubmit: (values: Record<string, unknown>) => void
   ariaLabel?: string
 }
+
+interface FormGeneratorFieldRowProps {
+  field: FieldSchema
+  value: unknown
+  error: string | null
+  isVisible: boolean
+  onChange: (id: string, value: unknown) => void
+  onBlur: (id: string) => void
+}
+
+/** Memoized so only the field whose value/error/visibility changed re-renders (e.g. on validate). */
+const FormGeneratorFieldRow = memo(function FormGeneratorFieldRow({
+  field,
+  value,
+  error,
+  isVisible,
+  onChange,
+  onBlur,
+}: FormGeneratorFieldRowProps) {
+  const Component = getFieldComponent(field.type)
+  return (
+    <div
+      className={isVisible ? 'field-visible' : 'field-hidden'}
+      aria-hidden={!isVisible}
+    >
+      <Component
+        field={field}
+        value={value}
+        error={error}
+        onChange={(v: unknown) => onChange(field.id, v)}
+        onBlur={() => onBlur(field.id)}
+      />
+    </div>
+  )
+})
 
 export function FormGenerator({ schema, onSubmit, ariaLabel = 'Dynamic form' }: FormGeneratorProps) {
   const { values, errors, visibleFields, handleChange, handleBlur, handleSubmit, reset } =
@@ -38,25 +74,17 @@ export function FormGenerator({ schema, onSubmit, ariaLabel = 'Dynamic form' }: 
       aria-label={ariaLabel}
       className="mx-auto w-full max-w-xl rounded-2xl border border-slate-700/80 bg-slate-800/90 p-8 shadow-xl shadow-black/30"
     >
-      {schema.map((field) => {
-        const Component = getFieldComponent(field.type)
-        const isVisible = visibleIds.has(field.id)
-        return (
-          <div
-            key={field.id}
-            className={isVisible ? 'field-visible' : 'field-hidden'}
-            aria-hidden={!isVisible}
-          >
-            <Component
-              field={field}
-              value={values[field.id]}
-              error={errors[field.id] ?? null}
-              onChange={(value: unknown) => handleChange(field.id, value)}
-              onBlur={() => handleBlur(field.id)}
-            />
-          </div>
-        )
-      })}
+      {schema.map((field) => (
+        <FormGeneratorFieldRow
+          key={field.id}
+          field={field}
+          value={values[field.id]}
+          error={errors[field.id] ?? null}
+          isVisible={visibleIds.has(field.id)}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      ))}
       <div className="mt-8 flex gap-3">
         <button
           type="button"

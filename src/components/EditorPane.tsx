@@ -1,6 +1,7 @@
 import type { FormSchema } from '../types/schema'
 import type { SchemaValidationError } from '../utils/schemaValidation'
 import { JsonEditor } from './JsonEditor'
+import { MagicInput } from './MagicInput'
 import { TEMPLATE_OPTIONS } from '../templates'
 
 export interface EditorPaneProps {
@@ -10,6 +11,12 @@ export interface EditorPaneProps {
   schemaErrors: SchemaValidationError[]
   onOpenReference: () => void
   loadTemplate: (schema: FormSchema) => void
+  /** AI generate: show prompt input in playground */
+  onAISubmit?: (input: { prompt: string }) => void
+  aiLoading?: boolean
+  onAIStop?: () => void
+  /** When true, editor shows generated JSON and is read-only while streaming */
+  editorReadOnly?: boolean
 }
 
 export function EditorPane({
@@ -19,20 +26,43 @@ export function EditorPane({
   schemaErrors,
   onOpenReference,
   loadTemplate,
+  onAISubmit,
+  aiLoading = false,
+  onAIStop,
+  editorReadOnly = false,
 }: EditorPaneProps) {
   return (
     <aside
       className="flex min-w-0 flex-col bg-[#0f172a] shadow-lg md:flex-[1] md:border-r md:border-slate-700/60"
       aria-label="Playground"
     >
-      <div className="shrink-0 border-b border-slate-600/80 px-4 py-3">
-        <h2 className="font-sans text-base font-semibold uppercase tracking-wider text-slate-400">
+      <div className="px-4 py-3 border-b shrink-0 border-slate-600/80">
+        <h2 className="font-sans text-base font-semibold tracking-wider uppercase text-slate-400">
           Playground
         </h2>
         <p className="mt-0.5 text-sm text-slate-500">
           Templates and schema editor. Templates stay in this column.
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        {onAISubmit && (
+          <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+            <MagicInput
+              onSubmit={(prompt) => onAISubmit({ prompt })}
+              isLoading={aiLoading}
+              placeholder="Describe the form you want…"
+              ariaLabel="Natural language form description"
+            />
+            {aiLoading && onAIStop && (
+              <button
+                type="button"
+                onClick={onAIStop}
+                className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-600"
+              >
+                Stop
+              </button>
+            )}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-2 mt-3">
           {TEMPLATE_OPTIONS.map((opt) => (
             <button
               key={opt.id}
@@ -46,7 +76,7 @@ export function EditorPane({
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2 border-b border-slate-600/80 px-3 py-2">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-slate-600/80">
         <span className="font-mono text-xs font-medium text-teal-400">schema.json</span>
         <div className="flex items-center gap-2">
           {parseError && (
@@ -77,6 +107,7 @@ export function EditorPane({
         <JsonEditor
           value={editorValue}
           onChange={setEditorValue}
+          readOnly={editorReadOnly}
           aria-label="JSON schema editor"
           aria-describedby={parseError ? 'schema-parse-error' : schemaErrors.length ? 'schema-validation-errors' : undefined}
           aria-invalid={Boolean(parseError || schemaErrors.length > 0)}

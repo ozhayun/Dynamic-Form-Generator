@@ -10,6 +10,7 @@ export interface JsonEditorProps {
   value: string
   onChange: (value: string) => void
   onScroll?: (scrollTop: number) => void
+  readOnly?: boolean
   'aria-label'?: string
   'aria-invalid'?: boolean
   'aria-describedby'?: string
@@ -18,6 +19,7 @@ export interface JsonEditorProps {
 export function JsonEditor({
   value,
   onChange,
+  readOnly = false,
   'aria-label': ariaLabel,
   'aria-invalid': ariaInvalid,
   'aria-describedby': ariaDescribedby,
@@ -70,7 +72,8 @@ export function JsonEditor({
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => !readOnly && onChange(e.target.value)}
+          readOnly={readOnly}
           className="absolute inset-0 resize-none border-0 bg-transparent font-mono text-transparent caret-amber-400 focus:outline-none focus:ring-0"
           style={{
             padding: PADDING,
