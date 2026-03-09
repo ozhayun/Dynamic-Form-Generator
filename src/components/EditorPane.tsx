@@ -11,7 +11,7 @@ export interface EditorPaneProps {
   schemaErrors: SchemaValidationError[]
   onOpenReference: () => void
   loadTemplate: (schema: FormSchema) => void
-  /** AI generate: show prompt input in playground */
+  /** AI generate: show prompt input in Magic Bar */
   onAISubmit?: (input: { prompt: string }) => void
   aiLoading?: boolean
   onAIStop?: () => void
@@ -34,98 +34,128 @@ export function EditorPane({
   return (
     <aside
       className="flex min-w-0 flex-col bg-[#0f172a] shadow-lg md:flex-[1] md:border-r md:border-slate-700/60"
-      aria-label="Playground"
+      aria-label="Editor"
     >
-      <div className="px-4 py-3 border-b shrink-0 border-slate-600/80">
-        <h2 className="font-sans text-base font-semibold tracking-wider uppercase text-slate-400">
-          Playground
-        </h2>
-        <p className="mt-0.5 text-sm text-slate-500">
-          Templates and schema editor. Templates stay in this column.
-        </p>
-        {onAISubmit && (
-          <div className="mt-3 flex w-full flex-wrap items-center gap-2">
+      {/* Magic Bar – top, separate from Playground */}
+      {onAISubmit && (
+        <div
+          className="shrink-0 border-b border-purple-500/30 bg-slate-900/50 px-4 py-3"
+          style={{
+            boxShadow: 'inset 0 0 0 1px rgba(139, 92, 246, 0.08)',
+          }}
+        >
+          <div className="flex w-full flex-wrap items-center gap-2">
             <MagicInput
               onSubmit={(prompt) => onAISubmit({ prompt })}
               isLoading={aiLoading}
               placeholder="Describe the form you want…"
               ariaLabel="Natural language form description"
+              className="flex-1 min-w-0"
             />
             {aiLoading && onAIStop && (
               <button
                 type="button"
                 onClick={onAIStop}
-                className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-600"
+                className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-600 transition-colors"
               >
                 Stop
               </button>
             )}
           </div>
-        )}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {TEMPLATE_OPTIONS.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => loadTemplate(opt.schema)}
-              className="rounded-full border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-[#0f172a]"
-              aria-label={`Load template: ${opt.label}`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-slate-600/80">
-        <span className="font-mono text-xs font-medium text-teal-400">schema.json</span>
-        <div className="flex items-center gap-2">
-          {parseError && (
-            <span
-              id="schema-parse-error"
-              className="rounded bg-red-500/20 px-2 py-0.5 font-mono text-[11px] text-red-400"
-              role="alert"
-            >
-              {parseError}
-            </span>
-          )}
-          {!parseError && schemaErrors.length > 0 && (
-            <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[11px] text-amber-400" role="alert">
-              {schemaErrors.length} error{schemaErrors.length !== 1 ? 's' : ''}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={onOpenReference}
-            className="rounded border border-slate-600 bg-slate-800 px-2 py-1 font-mono text-[11px] text-slate-300 hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-            aria-label="Open schema structure reference"
-          >
-            Reference
-          </button>
-        </div>
-      </div>
-      <div className="md:min-h-0 md:flex-1 md:overflow-hidden">
-        <JsonEditor
-          value={editorValue}
-          onChange={setEditorValue}
-          readOnly={editorReadOnly}
-          aria-label="JSON schema editor"
-          aria-describedby={parseError ? 'schema-parse-error' : schemaErrors.length ? 'schema-validation-errors' : undefined}
-          aria-invalid={Boolean(parseError || schemaErrors.length > 0)}
-        />
-      </div>
-      {schemaErrors.length > 0 && (
-        <div
-          id="schema-validation-errors"
-          className="max-h-20 shrink-0 overflow-auto border-t border-slate-600/80 bg-slate-900/80 px-3 py-1.5"
-          role="alert"
-        >
-          <ul className="list-inside list-disc space-y-0.5 font-mono text-[10px] text-amber-300/90">
-            {schemaErrors.map((err) => (
-              <li key={`${err.index ?? ''}-${err.path ?? ''}-${err.message}`}>{err.message}</li>
-            ))}
-          </ul>
         </div>
       )}
+
+      {/* Playground: templates + schema editor */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="shrink-0 border-b border-slate-600/80 px-4 py-3">
+          <h2 className="font-sans text-base font-semibold uppercase tracking-wider text-slate-400">
+            Playground
+          </h2>
+          <p className="mt-0.5 text-sm text-slate-500">
+            Templates and schema editor.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {TEMPLATE_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => loadTemplate(opt.schema)}
+                className="rounded-full border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-[#0f172a]"
+                aria-label={`Load template: ${opt.label}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 border-b border-slate-600/80 px-3 py-2 shrink-0">
+          <span className="font-mono text-xs font-medium text-teal-400">schema.json</span>
+          {aiLoading && (
+            <span className="text-xs text-violet-400/90 animate-pulse" role="status">
+              Crafting your form…
+            </span>
+          )}
+          <div className="flex items-center gap-2">
+            {parseError && (
+              <span
+                id="schema-parse-error"
+                className="rounded bg-red-500/20 px-2 py-0.5 font-mono text-[11px] text-red-400"
+                role="alert"
+              >
+                {parseError}
+              </span>
+            )}
+            {!parseError && schemaErrors.length > 0 && (
+              <span className="rounded bg-amber-500/20 px-2 py-0.5 font-mono text-[11px] text-amber-400" role="alert">
+                {schemaErrors.length} error{schemaErrors.length !== 1 ? 's' : ''}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={onOpenReference}
+              className="rounded border border-slate-600 bg-slate-800 px-2 py-1 font-mono text-[11px] text-slate-300 hover:bg-slate-700 hover:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+              aria-label="Open schema structure reference"
+            >
+              Reference
+            </button>
+          </div>
+        </div>
+
+        <div className="relative md:min-h-0 md:flex-1 md:overflow-hidden">
+          {aiLoading && (
+            <div
+              className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center"
+              aria-hidden
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/5 to-transparent animate-pulse" />
+              <div className="absolute inset-0 shimmer-bg opacity-40" />
+            </div>
+          )}
+          <JsonEditor
+            value={editorValue}
+            onChange={setEditorValue}
+            readOnly={editorReadOnly}
+            aria-label="JSON schema editor"
+            aria-describedby={parseError ? 'schema-parse-error' : schemaErrors.length ? 'schema-validation-errors' : undefined}
+            aria-invalid={Boolean(parseError || schemaErrors.length > 0)}
+          />
+        </div>
+
+        {schemaErrors.length > 0 && (
+          <div
+            id="schema-validation-errors"
+            className="max-h-20 shrink-0 overflow-auto border-t border-slate-600/80 bg-slate-900/80 px-3 py-1.5"
+            role="alert"
+          >
+            <ul className="list-inside list-disc space-y-0.5 font-mono text-[10px] text-amber-300/90">
+              {schemaErrors.map((err) => (
+                <li key={`${err.index ?? ''}-${err.path ?? ''}-${err.message}`}>{err.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </aside>
   )
 }

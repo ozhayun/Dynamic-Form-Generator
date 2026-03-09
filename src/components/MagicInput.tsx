@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from 'react'
+import { Sparkles, Loader2 } from 'lucide-react'
 
 export interface MagicInputProps {
   /** Called when the user submits the prompt (e.g. to trigger AI generation). */
@@ -35,7 +36,7 @@ function MagicInputComponent({
 
   return (
     <form onSubmit={handleSubmit} className={`w-full ${className ?? ''}`} role="search">
-      <div className="flex w-full flex-col gap-2">
+      <div className="flex flex-col w-full gap-3 sm:gap-2">
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -43,16 +44,27 @@ function MagicInputComponent({
           aria-label={ariaLabel}
           disabled={isLoading}
           rows={3}
-          className="min-h-[4.5rem] w-full max-w-full resize-y rounded-lg border border-slate-600 bg-slate-800/90 px-3.5 py-2.5 text-slate-100 placeholder:text-slate-500 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/30 disabled:opacity-60 sm:text-sm box-border"
+          className="min-h-[8rem] sm:min-h-[3.5rem] w-full max-w-full resize-y sm:resize-none rounded-xl sm:rounded-lg border border-slate-600/80 bg-slate-800/60 px-4 py-3.5 sm:px-3.5 sm:py-2.5 text-base sm:text-sm leading-relaxed text-slate-100 placeholder:text-slate-500 focus:border-violet-500/80 focus:outline-none focus:ring-2 focus:ring-violet-500/30 disabled:opacity-60 box-border transition-colors"
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
           <button
             type="submit"
             disabled={isLoading || !value.trim()}
-            className="rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-60 disabled:hover:bg-violet-600"
-            aria-label={isLoading ? 'Generating…' : 'Generate form'}
+            className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2 overflow-hidden rounded-xl sm:rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-3.5 sm:px-4 sm:py-2.5 text-base sm:text-sm font-medium text-white shadow-lg shadow-violet-500/25 transition-all duration-200 hover:shadow-violet-500/40 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-60 disabled:hover:shadow-violet-500/25"
+            aria-label={isLoading ? 'Generating…' : 'Generate form with AI'}
           >
-            {isLoading ? '…' : 'Generate'}
+            <span className="absolute inset-0 transition-opacity opacity-0 bg-gradient-to-r from-violet-500/0 via-white/10 to-indigo-500/0 group-hover:opacity-100" aria-hidden />
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 sm:h-4 sm:w-4 shrink-0 animate-spin" aria-hidden />
+                <span>Generating…</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5 sm:h-4 sm:w-4 shrink-0" aria-hidden />
+                <span>Generate with AI</span>
+              </>
+            )}
           </button>
         </div>
       </div>

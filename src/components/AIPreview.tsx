@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { motion } from 'framer-motion'
 import type { FormSchema } from '../types/schema'
 import { getFieldComponent, isKnownFieldType } from './fields'
 
@@ -46,10 +47,15 @@ interface AIPreviewFieldRowProps {
   index: number
 }
 
-const AIPreviewFieldRow = memo(function AIPreviewFieldRow({ field }: AIPreviewFieldRowProps) {
+const AIPreviewFieldRow = memo(function AIPreviewFieldRow({ field, index }: AIPreviewFieldRowProps) {
   const Component = getFieldComponent(field.type)
   return (
-    <div className="field-visible">
+    <motion.div
+      className="field-visible"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.04 }}
+    >
       <Component
         field={field}
         value=""
@@ -57,7 +63,7 @@ const AIPreviewFieldRow = memo(function AIPreviewFieldRow({ field }: AIPreviewFi
         onChange={() => {}}
         onBlur={() => {}}
       />
-    </div>
+    </motion.div>
   )
 })
 
@@ -85,7 +91,9 @@ export const AIPreview = memo(function AIPreview({ fields, className }: AIPrevie
       <div className="space-y-1 [&_.field-visible]:block">
         {list.map((raw, index) => {
           const field = normalizePartialField(raw as PartialField, index)
-          return <AIPreviewFieldRow key={field.id} field={field} index={index} />
+          return (
+            <AIPreviewFieldRow key={field.id} field={field} index={index} />
+          )
         })}
       </div>
     </div>
