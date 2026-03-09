@@ -5,10 +5,12 @@ import { FORM_GENERATOR_SYSTEM_PROMPT } from '../../../src/lib/ai/prompts/formGe
 export const maxDuration = 30
 
 // CORS: allow frontend origin. In production set NEXT_PUBLIC_APP_URL (or ALLOWED_ORIGIN) to your frontend URL.
-const ALLOWED_ORIGIN =
+// Normalize: no trailing slash so it matches the browser's Origin header exactly.
+const ALLOWED_ORIGIN = (
   process.env.ALLOWED_ORIGIN ??
   process.env.NEXT_PUBLIC_APP_URL ??
   'http://localhost:5173'
+).replace(/\/$/, '')
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
