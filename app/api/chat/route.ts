@@ -1,6 +1,5 @@
 import { streamText, Output } from 'ai'
 import { groq } from '@ai-sdk/groq'
-import { formConfigSchema } from '../../../src/schemas/formSchema'
 import { FORM_GENERATOR_SYSTEM_PROMPT } from '../../../src/lib/ai/prompts/formGeneratorPrompt'
 
 export const maxDuration = 30

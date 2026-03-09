@@ -60,7 +60,7 @@ export function SchemaStructureReference({ variant = 'inline' }: SchemaStructure
 }`}
           </pre>
           <p className={`mt-1 text-slate-500 ${isModal ? 'text-xs' : 'text-[10px]'}`}>
-            Pattern uses JavaScript regex. In JSON use double backslash for one backslash. Phone example: <code className="text-amber-300">&quot;^\\\\+?\\\\d{1,4}[-.\\\\s]?\\\\d{1,4}[-.\\\\s]?\\\\d{1,4}[-.\\\\s]?\\\\d{1,9}$&quot;</code> matches +1 123-456-7890.
+            Pattern uses JavaScript regex. In JSON use double backslash for one backslash. Phone example: <code className="text-amber-300">{`"^\\+?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$"`}</code> matches +1 123-456-7890.
           </p>
         </section>
         <section>
